@@ -1,24 +1,21 @@
 import { app } from "@/app";
+import { prisma } from "@/lib/prisma";
 import { createAndAuthenticateUser } from "@/utils/test/create-and-authenticate-user";
 import request from "supertest";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 describe("Metrics of Check-ins (e2e)", () => {
 	beforeAll(async () => {
 		await app.ready();
-
-		vi.useFakeTimers();
 	});
 
 	afterAll(async () => {
 		await app.close();
-
-		vi.useRealTimers();
 	});
 
 	it("should be able to list the metrics of check-ins", async () => {
-		vi.setSystemTime(new Date(2022, 0, 10, 8, 0, 0));
 		const { token } = await createAndAuthenticateUser(app);
+		const user = await prisma.user.findFirstOrThrow();
 
 		const gym = await request(app.server)
 			.post("/gyms")
@@ -31,23 +28,18 @@ describe("Metrics of Check-ins (e2e)", () => {
 				longitude: -10.2312044,
 			});
 
-		const checkIn = await request(app.server)
-			.post(`/gyms/${gym.body.gym.id}/check-ins`)
-			.set("Authorization", `Bearer ${token}`)
-			.send({
-				latitude: 54.9478114,
-				longitude: -10.2312044,
-			});
-
-		vi.setSystemTime(new Date(2022, 0, 10, 8, 21, 0));
-
-		const checkIn2 = await request(app.server)
-			.post(`/gyms/${gym.body.gym.id}/check-ins`)
-			.set("Authorization", `Bearer ${token}`)
-			.send({
-				latitude: 54.9478114,
-				longitude: -10.2312044,
-			});
+		await prisma.checkIn.createMany({
+			data: [
+				{
+					gym_id: gym.body.gym.id,
+					user_id: user.id,
+				},
+				{
+					gym_id: gym.body.gym.id,
+					user_id: user.id,
+				},
+			],
+		});
 
 		const checkInHistoryResponse = await request(app.server)
 			.get("/check-ins/metrics")
