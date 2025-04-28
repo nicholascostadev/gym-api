@@ -19,7 +19,7 @@ describe("History of Check-ins (e2e)", () => {
 
 	it("should be able to list the history of check-ins", async () => {
 		vi.setSystemTime(new Date(2022, 0, 10, 8, 0, 0));
-		const { token } = await createAndAuthenticateUser(app);
+		const { token } = await createAndAuthenticateUser(app, "ADMIN");
 		const user = await prisma.user.findFirstOrThrow();
 		const gym = await request(app.server)
 			.post("/gyms")

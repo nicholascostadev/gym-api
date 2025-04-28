@@ -1,0 +1,12 @@
+@token = {{token}}
+
+POST http://localhost:8080/gyms
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+  "title": "JavaScript Gym",
+  "description": "The best gym for JavaScript developers",
+  "phone": "1199999999",
+  "latitude": -23.5505,
+  "longitude": -46.6333
+}

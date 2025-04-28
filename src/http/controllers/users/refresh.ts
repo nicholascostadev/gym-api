@@ -1,5 +1,4 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { z } from "zod";
 
 export async function refreshTokenController(
 	request: FastifyRequest,
@@ -8,7 +7,9 @@ export async function refreshTokenController(
 	await request.jwtVerify({ onlyCookie: true });
 
 	const token = await reply.jwtSign(
-		{},
+		{
+			role: request.user.role,
+		},
 		{
 			sign: {
 				sub: request.user.sub,
@@ -17,7 +18,9 @@ export async function refreshTokenController(
 	);
 
 	const refreshToken = await reply.jwtSign(
-		{},
+		{
+			role: request.user.role,
+		},
 		{
 			sign: {
 				sub: request.user.sub,
