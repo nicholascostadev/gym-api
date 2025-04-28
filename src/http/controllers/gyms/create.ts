@@ -23,7 +23,7 @@ export async function createController(
 
 	const createGymService = makeCreateGymService();
 
-	await createGymService.execute({
+	const { gym } = await createGymService.execute({
 		title,
 		description,
 		phone,
@@ -31,5 +31,5 @@ export async function createController(
 		longitude,
 	});
 
-	return reply.status(201).send();
+	return reply.status(201).send({ gym });
 }

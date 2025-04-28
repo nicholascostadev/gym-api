@@ -24,12 +24,12 @@ export async function createController(
 
 	const checkInService = makeCheckInService();
 
-	await checkInService.execute({
+	const { checkIn } = await checkInService.execute({
 		userId: request.user.sub,
 		gymId,
 		userLatitude: latitude,
 		userLongitude: longitude,
 	});
 
-	return reply.status(201).send();
+	return reply.status(201).send({ checkIn });
 }
